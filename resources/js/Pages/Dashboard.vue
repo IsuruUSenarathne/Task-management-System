@@ -1,7 +1,28 @@
 <script setup>
+import { ref, onMounted } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
+import { Inertia } from '@inertiajs/inertia';
+
+const tasks = ref([]); // To hold the list of tasks
+
+// Fetch tasks from the backend
+const fetchTasks = async () => {
+    try {
+        const response = await fetch('/api/task'); // Adjust the endpoint as needed
+        const data = await response.json();
+        tasks.value = data; // Assign the fetched tasks to the tasks array
+    } catch (error) {
+        console.error('Error fetching tasks:', error);
+    }
+};
+
+// Call fetchTasks when the component is mounted
+onMounted(() => {
+    fetchTasks();
+});
 </script>
+
 
 <template>
 
@@ -46,7 +67,7 @@ import { Head } from '@inertiajs/vue3';
                                         Status
                                     </th>
                                     <th scope="col" class="px-6 py-3">
-                                        Price
+                                        Created
                                     </th>
                                     <th scope="col" class="px-6 py-3">
                                         <span class="sr-only">Edit</span>
@@ -54,36 +75,18 @@ import { Head } from '@inertiajs/vue3';
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr class="bg-white border-b hover:bg-gray-50 ">
+                                <tr class="bg-white border-b hover:bg-gray-50" v-for="task in tasks" :key="task.id">
                                     <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
-                                        Apple MacBook Pro 17"
+                                        {{ task.title }}
                                     </th>
                                     <td class="px-6 py-4">
-                                        Silver
+                                        {{ task.description }}
                                     </td>
                                     <td class="px-6 py-4">
-                                        Laptop
+                                        {{ task.status }}
                                     </td>
                                     <td class="px-6 py-4">
-                                        $2999
-                                    </td>
-                                    <td class="px-6 py-4 text-right space-x-2">
-                                        <a href="#" class="font-medium text-blue-600 hover:underline">Edit</a>
-                                        <a href="#" class="font-medium text-red-600 hover:underline">Delete</a>
-                                    </td>
-                                </tr>
-                                <tr class="bg-white border-b hover:bg-gray-50 ">
-                                    <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
-                                        Apple MacBook Pro 17"
-                                    </th>
-                                    <td class="px-6 py-4">
-                                        Silver
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        Laptop
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        $2999
+                                        {{ task.created_at }}
                                     </td>
                                     <td class="px-6 py-4 text-right space-x-2">
                                         <a href="#" class="font-medium text-blue-600 hover:underline">Edit</a>

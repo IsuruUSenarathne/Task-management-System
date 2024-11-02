@@ -13,7 +13,7 @@ const form = useForm({
 });
 
 const submit = () => {
-    form.post(route('add'), {
+    form.post('/api/add', {
         onFinish: () => form.reset('title', 'status', 'description'),
     });
 };
