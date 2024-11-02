@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Task;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class TaskController extends Controller
 {
@@ -16,15 +18,22 @@ class TaskController extends Controller
             'description' => 'nullable|string',
         ]);
 
-        $task = Task::create($request->only('title', 'status', 'description'));
+        $userId = auth()->id();
 
-        return redirect()->route('dashboard');
+        $task = Task::create([
+            'title' => $request->title,
+            'status' => $request->status,
+            'description' => $request->description,
+            'user_id' => $userId,
+        ]);
+
+        return redirect()->route('dashboard')->with('success', 'Task created successfully!');
     }
 
     // Fetch all tasks
     public function index()
     {
-        $tasks = Task::all();
+        $tasks = Task::where('user_id', auth()->id())->get();
         return response()->json($tasks);
     }
 }

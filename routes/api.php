@@ -15,9 +15,11 @@ use App\Http\Controllers\TaskController;
 |
 */
 
-Route::post('/add', [TaskController::class, 'store']);
-Route::get('/task', [TaskController::class, 'index']);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/add', [TaskController::class, 'store']);
+    Route::get('/task', [TaskController::class, 'index']);
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+    Route::get('/user', function (Request $request) {
+        return $request->user();
+    });
 });
