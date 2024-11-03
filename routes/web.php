@@ -29,9 +29,11 @@ Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::get('/edit', function () {
+Route::get('/task/{id}/edit', function () {
     return Inertia::render('EditTask');
-})->middleware(['auth', 'verified'])->name('edit');
+})->middleware(['auth', 'verified'])->name('task.edit');
+
+Route::put('/task/{id}', [TaskController::class, 'update'])->name('task.update');
 
 Route::get('/add', function () {
     return Inertia::render('AddTask');

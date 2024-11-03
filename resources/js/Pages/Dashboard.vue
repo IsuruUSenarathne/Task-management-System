@@ -108,7 +108,7 @@ onMounted(() => {
                                         {{ task.created_at }}
                                     </td>
                                     <td class="px-6 py-4 text-right space-x-2">
-                                        <a href="edit" class="font-medium text-blue-600 hover:underline">Edit</a>
+                                        <a :href="route('task.edit', { id: task.id })" class="font-medium text-blue-600 hover:underline">Edit</a>
                                         <button @click="deleteTask(task.id)"
                                             class="font-medium text-red-600 hover:underline">Delete</button>
                                     </td>

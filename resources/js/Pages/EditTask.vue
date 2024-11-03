@@ -5,30 +5,54 @@ import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
+import { ref, onMounted } from 'vue';
 
-
-
-const form = useForm({
-    title: '',
-    status: '',
-    description: '',
+const props = defineProps({
+    taskId: Number,
+    taskData: Object, // Optional if you are passing initial data
 });
 
+const form = useForm({
+    title: props.taskData?.title || '',
+    status: props.taskData?.status || '',
+    description: props.taskData?.description || '',
+});
+
+// Optional: Fetch task if taskData is not passed as a prop
+const fetchTask = async () => {
+    if (!props.taskData) {
+        try {
+            const response = await fetch(`/api/task/${props.taskId}/show`);
+            const data = await response.json();
+            form.title = data.title;
+            form.status = data.status;
+            form.description = data.description;
+        } catch (error) {
+            console.error('Error fetching task data:', error);
+        }
+    }
+};
+
 const submit = () => {
-    form.post('/api/task/add', {
+    form.post(`/api/task/${props.taskId}/update`, {
         onFinish: () => form.reset('title', 'status', 'description'),
     });
 };
 
+// Fetch task only if taskData is not provided
+onMounted(() => {
+    if (!props.taskData) fetchTask();
+});
 </script>
+
 
 <template>
 
-    <Head title="Dashboard" />
+    <Head title="Edit Task" />
 
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">Dashboard</h2>
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">Edit Task</h2>
         </template>
 
         <div class="py-10">
@@ -58,7 +82,7 @@ const submit = () => {
                         <div class="">
                             <div class="max-w-md mx-auto mt-10 bg-white shadow-lg rounded-lg overflow-hidden">
                                 <div class="text-2xl py-4 px-6  text-black text-center font-bold uppercase">
-                                    Create Task
+                                    Edit Task
                                 </div>
                                 <form class="py-4 px-6 space-y-3" @submit.prevent="submit">
 

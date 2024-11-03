@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Task;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 
 class TaskController extends Controller
 {
@@ -44,4 +45,26 @@ class TaskController extends Controller
 
         return response()->json(['message' => 'Task deleted successfully.']);
     }
+
+    public function edit($id)
+{
+    $task = Task::findOrFail($id);
+
+    return Inertia::render('TaskEdit', [
+        'taskId' => $id,
+        'taskData' => $task, // Optional: to pre-fill the form
+    ]);
+}
+
+    public function show($id)
+    {
+        $task = Task::find($id);
+
+        if (!$task) {
+            return response()->json(['message' => 'Task not found'], 404);
+        }
+
+        return response()->json($task);
+    }
+
 }
