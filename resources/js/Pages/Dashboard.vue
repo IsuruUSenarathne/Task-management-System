@@ -28,6 +28,26 @@ const fetchTasks = async (page = 1, status = 'option1') => {
     }
 };
 
+const deleteTask = async (id) => {
+    try {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        const response = await fetch(`/api/task/${id}/delete`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken
+            }
+        });
+        if (response.ok) {
+
+            tasks.value = tasks.value.filter(task => task.id !== id);
+        }
+    } catch (error) {
+        console.error('Error deleting tasks:', error);
+    }
+};
+
 const goToPage = (page) => {
     fetchTasks(page, selectedStatus.value);
 };
