@@ -31,10 +31,18 @@ class TaskController extends Controller
         return redirect()->route('dashboard')->with('success', 'Task created successfully!');
     }
 
-    // Fetch all tasks
+    
     public function index(Request $request)
     {
-        $tasks = Task::where('user_id', auth()->id())->paginate(5); 
+        $status = $request->query('status', 'option1'); // Default to 'option1'
+
+        $query = Task::where('user_id', auth()->id());
+
+        if ($status !== 'option1') { // 'option1' is "All"
+            $query->where('status', $status);
+        }
+
+        $tasks = $query->paginate(5);
 
         return response()->json($tasks);
     }
@@ -53,7 +61,7 @@ class TaskController extends Controller
 
     return Inertia::render('TaskEdit', [
         'taskId' => $id,
-        'taskData' => $task, // Optional: to pre-fill the form
+        'taskData' => $task, 
     ]);
 }
 
@@ -67,5 +75,7 @@ class TaskController extends Controller
 
         return response()->json($task);
     }
+
+    
 
 }

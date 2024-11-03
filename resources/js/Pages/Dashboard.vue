@@ -9,34 +9,16 @@ const pagination = ref({
     current_page: 1,
     last_page: 1,
 });
-const deleteTask = async (id) => {
-    try {
-        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content'); // Get the CSRF token
-        
-        const response = await fetch(`/api/task/${id}/delete`, {
-            method: 'DELETE',
-            headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': csrfToken
-                }
-        }); // Adjust the endpoint as needed
-        if (response.ok) {
-            // Filter out the deleted task from the tasks array
-            tasks.value = tasks.value.filter(task => task.id !== id);
-        }
-    } catch (error) {
-        console.error('Error deleting tasks:', error);
-    }
-};
+const selectedStatus = ref('option1'); // Default to "All"
 
-// Fetch tasks from the backend
-const fetchTasks = async (page = 1) => {
+// Fetch tasks based on selected status and page
+const fetchTasks = async (page = 1, status = 'option1') => {
     try {
-        const response = await fetch(`/api/task/list?page=${page}`);
+        const response = await fetch(`/api/task/list?page=${page}&status=${status}`);
         const data = await response.json();
         
         // Update tasks and pagination info
-        tasks.value = data.data; // Access the tasks array in paginated response
+        tasks.value = data.data; 
         pagination.value = {
             current_page: data.current_page,
             last_page: data.last_page,
@@ -47,14 +29,18 @@ const fetchTasks = async (page = 1) => {
 };
 
 const goToPage = (page) => {
-    fetchTasks(page);
+    fetchTasks(page, selectedStatus.value);
 };
 
-// Call fetchTasks when the component is mounted
+const filterTasks = () => {
+    fetchTasks(1, selectedStatus.value); // Reset to first page on filter change
+};
+
 onMounted(() => {
     fetchTasks();
 });
 </script>
+
 
 
 <template>
@@ -72,11 +58,10 @@ onMounted(() => {
                     <div class="p-6 text-gray-900 flex justify-between">
                         <div class="">
                             <label for="options"></label>
-                            <select id="options" name="status">
+                            <select id="options" v-model="selectedStatus" @change="filterTasks">
                                 <option value="option1">All</option>
-                                <option value="option2">Pending</option>
-                                <option value="option3">Completed</option>
-
+                                <option value="Pending">Pending</option>
+                                <option value="Completed">Completed</option>
                             </select>
                         </div>
                         <div class="">
@@ -116,13 +101,14 @@ onMounted(() => {
                                         {{ task.description }}
                                     </td>
                                     <td class="px-6 py-4">
-                                        {{ task.status }} 
+                                        {{ task.status }}
                                     </td>
                                     <td class="px-6 py-4">
                                         {{ task.created_at }}
                                     </td>
                                     <td class="px-6 py-4 text-right space-x-2">
-                                        <a :href="route('task.edit', { id: task.id })" class="font-medium text-blue-600 hover:underline">Edit</a>
+                                        <a :href="route('task.edit', { id: task.id })"
+                                            class="font-medium text-blue-600 hover:underline">Edit</a>
                                         <button @click="deleteTask(task.id)"
                                             class="font-medium text-red-600 hover:underline">Delete</button>
                                     </td>
@@ -130,26 +116,22 @@ onMounted(() => {
                             </tbody>
                         </table>
                         <div class="pagination">
-        <button
-            :disabled="pagination.current_page === 1"
-            @click="goToPage(pagination.current_page - 1)"
-            class="px-4 py-2 text-gray-600 disabled:opacity-50"
-        >
-            Previous
-        </button>
+                            <button :disabled="pagination.current_page === 1"
+                                @click="goToPage(pagination.current_page - 1)"
+                                class="px-4 py-2 text-gray-600 disabled:opacity-50">
+                                Previous
+                            </button>
 
-        <span class="mx-2">
-            Page {{ pagination.current_page }} of {{ pagination.last_page }}
-        </span>
+                            <span class="mx-2">
+                                Page {{ pagination.current_page }} of {{ pagination.last_page }}
+                            </span>
 
-        <button
-            :disabled="pagination.current_page === pagination.last_page"
-            @click="goToPage(pagination.current_page + 1)"
-            class="px-4 py-2 text-gray-600 disabled:opacity-50"
-        >
-            Next
-        </button>
-    </div>
+                            <button :disabled="pagination.current_page === pagination.last_page"
+                                @click="goToPage(pagination.current_page + 1)"
+                                class="px-4 py-2 text-gray-600 disabled:opacity-50">
+                                Next
+                            </button>
+                        </div>
                     </div>
 
                 </div>
