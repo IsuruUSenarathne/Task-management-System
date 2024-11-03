@@ -34,11 +34,11 @@ class TaskController extends Controller
     
     public function index(Request $request)
     {
-        $status = $request->query('status', 'option1'); // Default to 'option1'
+        $status = $request->query('status', 'option1'); 
 
         $query = Task::where('user_id', auth()->id());
 
-        if ($status !== 'option1') { // 'option1' is "All"
+        if ($status !== 'option1') { // 
             $query->where('status', $status);
         }
 

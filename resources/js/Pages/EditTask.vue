@@ -9,7 +9,7 @@ import { ref, onMounted } from 'vue';
 
 const props = defineProps({
     taskId: Number,
-    taskData: Object, // Optional if you are passing initial data
+    taskData: Object, 
 });
 
 const form = useForm({
@@ -18,7 +18,7 @@ const form = useForm({
     description: props.taskData?.description || '',
 });
 
-// Optional: Fetch task if taskData is not passed as a prop
+
 const fetchTask = async () => {
     if (!props.taskData) {
         try {
@@ -39,7 +39,7 @@ const submit = () => {
     });
 };
 
-// Fetch task only if taskData is not provided
+
 onMounted(() => {
     if (!props.taskData) fetchTask();
 });
