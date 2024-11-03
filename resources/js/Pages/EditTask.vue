@@ -1,6 +1,25 @@
 <script setup>
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import { Head } from "@inertiajs/vue3";
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import InputError from '@/Components/InputError.vue';
+import InputLabel from '@/Components/InputLabel.vue';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
+import TextInput from '@/Components/TextInput.vue';
+import { Head, Link, useForm } from '@inertiajs/vue3';
+
+
+
+const form = useForm({
+    title: '',
+    status: '',
+    description: '',
+});
+
+const submit = () => {
+    form.post('/api/task/add', {
+        onFinish: () => form.reset('title', 'status', 'description'),
+    });
+};
+
 </script>
 
 <template>
@@ -9,9 +28,7 @@ import { Head } from "@inertiajs/vue3";
 
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Edit Task
-            </h2>
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">Dashboard</h2>
         </template>
 
         <div class="py-10">
@@ -20,77 +37,71 @@ import { Head } from "@inertiajs/vue3";
                     <div class="p-6 text-gray-900 flex justify-between">
                         <div class="">
                             <label for="options"></label>
+
                         </div>
                         <div class="">
                             <a href="#" class="font-medium text-blue-600 hover:underline">
+
                             </a>
                         </div>
                     </div>
 
                     <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
                         <table class="w-full text-sm text-left rtl:text-right text-gray-500">
-                            <thead class="text-xs text-gray-700 uppercase bg-gray-50"></thead>
-                            <tbody></tbody>
+                            <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+
+                            </thead>
+                            <tbody>
+
+                            </tbody>
                         </table>
                         <div class="">
                             <div class="max-w-md mx-auto mt-10 bg-white shadow-lg rounded-lg overflow-hidden">
-                                <div class="text-2xl py-4 px-6 text-black text-center font-bold uppercase">
-                                    Task Details
+                                <div class="text-2xl py-4 px-6  text-black text-center font-bold uppercase">
+                                    Create Task
                                 </div>
-                                <form class="py-4 px-6" action="" method="POST">
-                                    <div class="mb-4">
-                                        <label class="block text-gray-700 font-bold mb-2" for="Task title">
-                                            Task Title
-                                        </label>
-                                        <input
-                                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                            id="name" type="text" placeholder="Enter your Task title" />
+                                <form class="py-4 px-6 space-y-3" @submit.prevent="submit">
+
+                                    <div>
+                                        <InputLabel for="title" value="Task Title" />
+                                        <TextInput id="title" type="text" class="mt-1 block w-full" v-model="form.title"
+                                            required autofocus autocomplete="title" />
+                                        <InputError class="mt-2" :message="form.errors.title" />
                                     </div>
 
-                                    <div class="mb-4">
-                                        <label class="block text-gray-700 font-bold mb-2" for="date">
-                                            Date
-                                        </label>
-                                        <input
-                                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                            id="date" type="date" placeholder="Select a date" />
-                                    </div>
 
                                     <div class="mb-4">
-                                        <label class="block text-gray-700 font-bold mb-2" for="Status">
-                                            Status
-                                        </label>
+                                        <InputLabel for="status" value="Status" />
                                         <select
-                                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                            id="status" name="Status">
-                                            <option value="Pending">
-                                                Pending
-                                            </option>
-                                            <option value="Completed">
-                                                Completed
-                                            </option>
+                                            class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm w-full"
+                                            id="status" name="Status" v-model="form.status">
+                                            <option value="Pending">Pending</option>
+                                            <option value="Completed">Completed</option>
                                         </select>
+                                        <InputError class="mt-2" :message="form.errors.status" />
                                     </div>
+
+
                                     <div class="mb-4">
-                                        <label class="block text-gray-700 font-bold mb-2" for="Description">
-                                            Description
-                                        </label>
+                                        <InputLabel for="description" value="Description" />
                                         <textarea
-                                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                            class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm w-full"
                                             id="message" rows="4"
-                                            placeholder="Enter any description about the task"></textarea>
+                                            placeholder="Enter any description about the task" v-model="form.description"></textarea>
+                                        <InputError class="mt-2" :message="form.errors.description" />
                                     </div>
                                     <div class="flex items-center justify-center mb-4">
-                                        <button
-                                            class="bg-gray-900 text-black py-2 px-4 rounded hover:bg-gray-800 focus:outline-none focus:shadow-outline"
-                                            type="submit">
-                                            Edit Task
-                                        </button>
+                                        <PrimaryButton class="ms-4" :class="{ 'opacity-25': form.processing }"
+                                            :disabled="form.processing">
+                                            Add Task
+                                        </PrimaryButton>
                                     </div>
+
                                 </form>
                             </div>
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>

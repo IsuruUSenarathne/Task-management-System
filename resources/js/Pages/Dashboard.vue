@@ -5,11 +5,30 @@ import { Head } from '@inertiajs/vue3';
 import { Inertia } from '@inertiajs/inertia';
 
 const tasks = ref([]); // To hold the list of tasks
+const deleteTask = async (id) => {
+    try {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content'); // Get the CSRF token
+        
+        const response = await fetch(`/api/task/${id}/delete`, {
+            method: 'DELETE',
+            headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken
+                }
+        }); // Adjust the endpoint as needed
+        if (response.ok) {
+            // Filter out the deleted task from the tasks array
+            tasks.value = tasks.value.filter(task => task.id !== id);
+        }
+    } catch (error) {
+        console.error('Error deleting tasks:', error);
+    }
+};
 
 // Fetch tasks from the backend
 const fetchTasks = async () => {
     try {
-        const response = await fetch('/api/task'); // Adjust the endpoint as needed
+        const response = await fetch('/api/task/list'); // Adjust the endpoint as needed
         const data = await response.json();
         tasks.value = data; // Assign the fetched tasks to the tasks array
     } catch (error) {
@@ -89,8 +108,9 @@ onMounted(() => {
                                         {{ task.created_at }}
                                     </td>
                                     <td class="px-6 py-4 text-right space-x-2">
-                                        <a href="#" class="font-medium text-blue-600 hover:underline">Edit</a>
-                                        <a href="#" class="font-medium text-red-600 hover:underline">Delete</a>
+                                        <a href="edit" class="font-medium text-blue-600 hover:underline">Edit</a>
+                                        <button @click="deleteTask(task.id)"
+                                            class="font-medium text-red-600 hover:underline">Delete</button>
                                     </td>
                                 </tr>
                             </tbody>

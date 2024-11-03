@@ -16,8 +16,9 @@ use App\Http\Controllers\TaskController;
 */
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/add', [TaskController::class, 'store']);
-    Route::get('/task', [TaskController::class, 'index']);
+    Route::post('/task/add', [TaskController::class, 'store']);
+    Route::get('/task/list', [TaskController::class, 'index']);
+    Route::delete('/task/{id}/delete', [TaskController::class, 'destroy']);
 
     Route::get('/user', function (Request $request) {
         return $request->user();
