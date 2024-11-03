@@ -4,7 +4,11 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
 import { Inertia } from '@inertiajs/inertia';
 
-const tasks = ref([]); // To hold the list of tasks
+const tasks = ref([]);
+const pagination = ref({
+    current_page: 1,
+    last_page: 1,
+});
 const deleteTask = async (id) => {
     try {
         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content'); // Get the CSRF token
@@ -26,14 +30,24 @@ const deleteTask = async (id) => {
 };
 
 // Fetch tasks from the backend
-const fetchTasks = async () => {
+const fetchTasks = async (page = 1) => {
     try {
-        const response = await fetch('/api/task/list'); // Adjust the endpoint as needed
+        const response = await fetch(`/api/task/list?page=${page}`);
         const data = await response.json();
-        tasks.value = data; // Assign the fetched tasks to the tasks array
+        
+        // Update tasks and pagination info
+        tasks.value = data.data; // Access the tasks array in paginated response
+        pagination.value = {
+            current_page: data.current_page,
+            last_page: data.last_page,
+        };
     } catch (error) {
         console.error('Error fetching tasks:', error);
     }
+};
+
+const goToPage = (page) => {
+    fetchTasks(page);
 };
 
 // Call fetchTasks when the component is mounted
@@ -102,7 +116,7 @@ onMounted(() => {
                                         {{ task.description }}
                                     </td>
                                     <td class="px-6 py-4">
-                                        {{ task.status }}
+                                        {{ task.status }} 
                                     </td>
                                     <td class="px-6 py-4">
                                         {{ task.created_at }}
@@ -115,17 +129,27 @@ onMounted(() => {
                                 </tr>
                             </tbody>
                         </table>
-                        <div class="">
-                            <a href="#" class="font-medium text-blue-600 hover:underline">
-                                <button type="button">>>
-                                    <div class="container">
-                                        <div class="container">
-                                        </div>
-                                    </div>
+                        <div class="pagination">
+        <button
+            :disabled="pagination.current_page === 1"
+            @click="goToPage(pagination.current_page - 1)"
+            class="px-4 py-2 text-gray-600 disabled:opacity-50"
+        >
+            Previous
+        </button>
 
-                                </button>
-                            </a>
-                        </div>
+        <span class="mx-2">
+            Page {{ pagination.current_page }} of {{ pagination.last_page }}
+        </span>
+
+        <button
+            :disabled="pagination.current_page === pagination.last_page"
+            @click="goToPage(pagination.current_page + 1)"
+            class="px-4 py-2 text-gray-600 disabled:opacity-50"
+        >
+            Next
+        </button>
+    </div>
                     </div>
 
                 </div>

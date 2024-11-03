@@ -32,9 +32,10 @@ class TaskController extends Controller
     }
 
     // Fetch all tasks
-    public function index()
+    public function index(Request $request)
     {
-        $tasks = Task::where('user_id', auth()->id())->get();
+        $tasks = Task::where('user_id', auth()->id())->paginate(5); 
+
         return response()->json($tasks);
     }
 
