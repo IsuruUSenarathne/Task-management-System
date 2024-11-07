@@ -48,7 +48,7 @@ The application provides the following API endpoints for managing tasks:
 
 1. Clone the repository
 bash
-git clone https://github.com/YourUsername/Task-management-System.git
+git clone https://github.com/IsuruUSenarathne/Task-management-System.git
 cd Task-management-System
 
 
